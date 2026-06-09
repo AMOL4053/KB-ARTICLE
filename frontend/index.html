@@ -19,8 +19,26 @@
         </div>
 
         <form id="sopForm" class="composer">
-          <label for="topic">Problem or SOP request</label>
-          <textarea id="topic" name="topic" rows="6" placeholder="Example: Outlook configuration error SOP" required></textarea>
+          <div class="mode-switch" role="radiogroup" aria-label="SOP source">
+            <label>
+              <input type="radio" name="sourceMode" value="text" checked>
+              <span>Type Problem</span>
+            </label>
+            <label>
+              <input type="radio" name="sourceMode" value="pdf">
+              <span>Upload PDF</span>
+            </label>
+          </div>
+
+          <div id="textSource" class="source-panel">
+            <label for="topic">Problem or SOP request</label>
+            <textarea id="topic" name="topic" rows="6" placeholder="Example: Outlook configuration error SOP" required></textarea>
+          </div>
+
+          <div id="pdfSource" class="source-panel hidden">
+            <label for="pdfFile">Problem PDF</label>
+            <input id="pdfFile" name="pdf" type="file" accept="application/pdf,.pdf">
+          </div>
 
           <label for="model">Ollama model</label>
           <input id="model" name="model" type="text" value="llama3.2:latest">

@@ -31,10 +31,11 @@ OUTPUT_DIR = Path("generated_docs")
 IMAGE_DIR = Path("generated_images")
 
 
-def slugify(value: str) -> str:
+def slugify(value: str, max_length: int = 80) -> str:
     value = value.strip().lower()
     value = re.sub(r"[^a-z0-9]+", "-", value)
-    return value.strip("-") or "sop"
+    value = value.strip("-") or "sop"
+    return value[:max_length].rstrip("-") or "sop"
 
 
 def clean_ollama_output(value: str) -> str:
@@ -73,14 +74,83 @@ def extract_first_json_object(value: str) -> str | None:
     return None
 
 
+def run_ollama_prompt(prompt: str, model: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["ollama", "run", "--nowordwrap", model],
+        input=prompt,
+        text=True,
+        capture_output=True,
+        check=False,
+        encoding="utf-8",
+    )
+
+
+def parse_sop_json(content: str) -> dict:
+    content = clean_ollama_output(content)
+    json_text = extract_first_json_object(content)
+    if not json_text:
+        json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', content, re.DOTALL)
+        if json_match:
+            json_text = json_match.group(1)
+
+    if not json_text:
+        raise ValueError(f"Could not extract JSON from Ollama response: {content[:200]}")
+
+    return json.loads(json_text)
+
+
+def repair_sop_json(markdown_or_text: str, model: str) -> dict:
+    repair_prompt = f"""
+Convert the following SOP draft into ONLY valid JSON.
+Do not include markdown, commentary, or code fences.
+
+Required JSON shape:
+{{
+  "title": "Short title under 90 characters",
+  "purpose": "Clear statement of why this SOP exists",
+  "scope": ["scope item 1", "scope item 2", "scope item 3"],
+  "prerequisites": ["prerequisite 1", "prerequisite 2", "prerequisite 3"],
+  "roles_responsibilities": [
+    {{"role": "Role name", "responsibility": "What they do"}}
+  ],
+  "procedure": [
+    "Step 1: Detailed action with specific instructions",
+    "Step 2: Another step with clear guidance",
+    "Step 3: Final step with completion criteria"
+  ],
+  "validation": ["validation check 1", "validation check 2"],
+  "troubleshooting": [
+    {{"issue": "Problem description", "cause": "Root cause", "resolution": "How to fix"}}
+  ],
+  "rollback": ["rollback step 1", "rollback step 2"],
+  "references": ["reference 1", "reference 2"]
+}}
+
+SOP draft to convert:
+<<<SOP_DRAFT
+{markdown_or_text[:12000]}
+SOP_DRAFT
+>>>
+""".strip()
+    result = run_ollama_prompt(repair_prompt, model)
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or "Ollama JSON repair failed.")
+    try:
+        return parse_sop_json(result.stdout)
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Could not extract JSON from Ollama response: {clean_ollama_output(markdown_or_text)[:200]}") from exc
+
+
 def run_ollama_sop(topic: str, model: str) -> dict:
     """Generate SOP content as structured data from LLM"""
+    example_title = topic if len(topic) <= 120 else "Short SOP title based on the request"
     prompt = f"""
-Create a detailed Standard Operating Procedure (SOP) for: {topic}
+You are creating structured SOP data for a ServiceNow KB draft.
+Return ONLY valid JSON. Do not include markdown, headings, table of contents, or explanatory text.
 
-Return ONLY valid JSON with this exact structure (no markdown, no other text):
+Use this exact JSON structure:
 {{
-  "title": "{topic}",
+  "title": "{example_title}",
   "purpose": "Clear statement of why this SOP exists",
   "scope": ["scope item 1", "scope item 2", "scope item 3"],
   "prerequisites": ["prerequisite 1", "prerequisite 2", "prerequisite 3"],
@@ -105,36 +175,26 @@ Return ONLY valid JSON with this exact structure (no markdown, no other text):
 Requirements:
 - Use 3-5 items for each list
 - Use 3-5 procedure steps
-- Make content specific to {topic}
+- Keep title short, specific, and under 90 characters
+- Make content specific to the source request below
 - Be detailed and actionable
 - Use professional technical writing style
+
+Source request:
+<<<SOURCE
+{topic[:18000]}
+SOURCE
+>>>
 """.strip()
 
-    result = subprocess.run(
-        ["ollama", "run", "--nowordwrap", model, prompt],
-        text=True,
-        capture_output=True,
-        check=False,
-        encoding="utf-8",
-    )
+    result = run_ollama_prompt(prompt, model)
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or "Ollama generation failed.")
 
-    content = clean_ollama_output(result.stdout)
-    
-    json_text = extract_first_json_object(content)
-    if not json_text:
-        json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', content, re.DOTALL)
-        if json_match:
-            json_text = json_match.group(1)
-        else:
-            raise RuntimeError(f"Could not extract JSON from Ollama response: {content[:200]}")
-    
     try:
-        sop_data = json.loads(json_text)
-        return sop_data
-    except json.JSONDecodeError as e:
-        raise RuntimeError(f"Failed to parse JSON: {e}\nResponse: {json_text[:500]}")
+        return parse_sop_json(result.stdout)
+    except (ValueError, json.JSONDecodeError):
+        return repair_sop_json(result.stdout, model)
 
 
 def generate_image_plan_from_sop(sop_data: dict, model: str) -> dict:
@@ -176,13 +236,7 @@ Return ONLY JSON (no markdown):
 Make steps match the actual procedure from the SOP.
 """.strip()
 
-    result = subprocess.run(
-        ["ollama", "run", "--nowordwrap", model, prompt],
-        text=True,
-        capture_output=True,
-        check=False,
-        encoding="utf-8",
-    )
+    result = run_ollama_prompt(prompt, model)
     
     if result.returncode != 0:
         return fallback_image_plan(title, procedure_steps)

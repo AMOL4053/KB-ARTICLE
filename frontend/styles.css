@@ -99,7 +99,8 @@ label {
 }
 
 textarea,
-input[type="text"] {
+input[type="text"],
+input[type="file"] {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -112,9 +113,51 @@ input[type="text"] {
 }
 
 textarea:focus,
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="file"]:focus {
   border-color: var(--blue);
   background: #fff;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.mode-switch label {
+  display: block;
+  font-size: 13px;
+}
+
+.mode-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-switch span {
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.mode-switch input:checked + span {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(23, 32, 51, 0.12);
+}
+
+.source-panel {
+  display: grid;
+  gap: 12px;
 }
 
 button,

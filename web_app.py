@@ -3,7 +3,9 @@ import mimetypes
 import os
 import sys
 import uuid
+from cgi import FieldStorage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from io import BytesIO
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -13,11 +15,13 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 import generate_sop_kb as sop
+from PyPDF2 import PdfReader
 
 
 ROOT = Path(__file__).resolve().parent
 FRONTEND_DIR = ROOT / "frontend"
 DRAFTS: dict[str, dict] = {}
+MAX_PDF_UPLOAD_BYTES = 25 * 1024 * 1024
 
 
 def relative_path(path: Path) -> str:
@@ -28,9 +32,38 @@ def add_log(logs: list[dict], message: str, level: str = "info") -> None:
     logs.append({"level": level, "message": message})
 
 
-def build_sop(topic: str, model: str) -> dict:
+def extract_pdf_text(pdf_bytes: bytes) -> str:
+    reader = PdfReader(BytesIO(pdf_bytes))
+    pages: list[str] = []
+    for index, page in enumerate(reader.pages, start=1):
+        text = page.extract_text() or ""
+        text = " ".join(text.split())
+        if text:
+            pages.append(f"Page {index}: {text}")
+    return "\n\n".join(pages).strip()
+
+
+def build_pdf_topic(pdf_name: str, pdf_text: str) -> str:
+    return f"""
+Create a Standard Operating Procedure from the uploaded problem PDF.
+
+PDF file: {pdf_name}
+
+Use the PDF as the source problem statement. Identify the issue, affected system,
+likely roles, prerequisites, resolution procedure, validation checks,
+troubleshooting guidance, rollback/recovery, and useful references from this
+content. If a detail is missing, write a practical enterprise support SOP step
+without inventing product-specific facts.
+Keep the SOP title short, specific, and under 90 characters.
+
+PDF content:
+{pdf_text[:18000]}
+""".strip()
+
+
+def build_sop(topic: str, model: str, source_label: str | None = None) -> dict:
     logs: list[dict] = []
-    add_log(logs, f"Request received: {topic}", "info")
+    add_log(logs, f"Request received: {source_label or topic}", "info")
 
     add_log(logs, "1/5 Generating SOP content from Ollama...")
     sop_data = sop.run_ollama_sop(topic, model)
@@ -55,7 +88,7 @@ def build_sop(topic: str, model: str) -> dict:
 
     draft_id = uuid.uuid4().hex
     DRAFTS[draft_id] = {
-        "topic": topic,
+        "topic": sop_data.get("title", source_label or topic),
         "html": html_content,
         "title": sop_data.get("title", topic),
     }
@@ -64,7 +97,7 @@ def build_sop(topic: str, model: str) -> dict:
     return {
         "ok": True,
         "draft_id": draft_id,
-        "topic": topic,
+        "topic": sop_data.get("title", source_label or topic),
         "title": sop_data.get("title", topic),
         "layout": layout,
         "html": html_content,
@@ -120,6 +153,54 @@ class AppHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def read_json_body(self) -> dict:
+        length = int(self.headers.get("Content-Length", "0"))
+        if not length:
+            return {}
+        return json.loads(self.rfile.read(length).decode("utf-8"))
+
+    def read_generate_request(self) -> tuple[str, str, str | None]:
+        content_type = self.headers.get("Content-Type", "")
+        length = int(self.headers.get("Content-Length", "0"))
+        if length > MAX_PDF_UPLOAD_BYTES:
+            raise ValueError("PDF upload is too large. Please upload a PDF smaller than 25 MB.")
+
+        if content_type.startswith("multipart/form-data"):
+            form = FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={
+                    "REQUEST_METHOD": "POST",
+                    "CONTENT_TYPE": content_type,
+                    "CONTENT_LENGTH": str(length),
+                },
+            )
+            model = str(form.getfirst("model", sop.DEFAULT_MODEL)).strip() or sop.DEFAULT_MODEL
+            uploaded = form["pdf"] if "pdf" in form else None
+            if uploaded is None or not getattr(uploaded, "filename", ""):
+                raise ValueError("Please upload a PDF problem document.")
+
+            pdf_name = Path(uploaded.filename).name
+            if not pdf_name.lower().endswith(".pdf"):
+                raise ValueError("Only PDF uploads are supported.")
+
+            pdf_bytes = uploaded.file.read()
+            if not pdf_bytes:
+                raise ValueError("Uploaded PDF is empty.")
+
+            pdf_text = extract_pdf_text(pdf_bytes)
+            if not pdf_text:
+                raise ValueError("Could not extract readable text from the PDF. Please upload a text-based PDF.")
+
+            return build_pdf_topic(pdf_name, pdf_text), model, f"PDF upload: {pdf_name}"
+
+        data = self.read_json_body()
+        topic = str(data.get("topic", "")).strip()
+        model = str(data.get("model", sop.DEFAULT_MODEL)).strip() or sop.DEFAULT_MODEL
+        if not topic:
+            raise ValueError("Please enter the problem or SOP topic.")
+        return topic, model, None
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
 
@@ -164,24 +245,18 @@ class AppHandler(BaseHTTPRequestHandler):
             return
 
         try:
-            length = int(self.headers.get("Content-Length", "0"))
-            data = json.loads(self.rfile.read(length).decode("utf-8"))
-
             if path == "/api/publish":
+                data = self.read_json_body()
                 draft_id = str(data.get("draft_id", "")).strip()
                 topic = str(data.get("topic", "")).strip()
                 html_content = str(data.get("html", "")).strip()
                 self.send_json(publish_draft(draft_id, topic, html_content))
                 return
 
-            topic = str(data.get("topic", "")).strip()
-            model = str(data.get("model", sop.DEFAULT_MODEL)).strip() or sop.DEFAULT_MODEL
-
-            if not topic:
-                self.send_json({"ok": False, "error": "Please enter the problem or SOP topic."}, 400)
-                return
-
-            self.send_json(build_sop(topic, model))
+            topic, model, source_label = self.read_generate_request()
+            self.send_json(build_sop(topic, model, source_label))
+        except ValueError as exc:
+            self.send_json({"ok": False, "error": str(exc)}, 400)
         except Exception as exc:
             self.send_json(
                 {"ok": False, "error": str(exc)},
