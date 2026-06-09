@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>dns server error</title>
+  <style>
+    body {
+      color: #202124;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.55;
+      margin: 32px;
+      max-width: 900px;
+    }
+    h1, h2 {
+      color: #1f2933;
+    }
+    h1 {
+      border-bottom: 2px solid #d8dee4;
+      padding-bottom: 8px;
+    }
+    li {
+      margin: 6px 0;
+    }
+    figure {
+      border: 1px solid #d8dee4;
+      margin: 18px 0;
+      padding: 12px;
+    }
+    figure div {
+      background: #f6f8fa;
+      border: 1px dashed #8c959f;
+      color: #57606a;
+      padding: 24px;
+      text-align: center;
+    }
+    figcaption {
+      color: #57606a;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<h1>DNS Server Error Standard Operating Procedure</h1>
+
+<p>The following procedure outlines the steps to follow when a DNS server e[1D[K
+error occurs.</p>
+
+<h2>Purpose</h2>
+The purpose of this SOP is to ensure that DNS server errors are resolved ef[2D[K
+efficiently and effectively, minimizing downtime and data loss.
+
+<h2>Scope</h2>
+This SOP applies to all staff members who manage or interact with the organ[5D[K
+organization's network infrastructure.
+
+<h2>Prerequisites</h2>
+To follow this SOP, you will need:
+
+* A working understanding of DNS server configuration and troubleshooting
+* Access to the affected DNS server and network management tools
+* Familiarity with the organization's network infrastructure and systems
+
+<h2>Procedure</h2>
+
+1. <ol style="list-style-type:decimal;">
+  * Identify the source of the error: Check the DNS server logs for error m[1D[K
+messages or warnings.
+  * Determine the impact of the error: Verify that the error is not affecti[7D[K
+affecting critical services or data.
+  * Consult with IT support staff: Reach out to IT support for guidance and[3D[K
+and assistance.
+</ol>
+
+2. <ol style="list-style-type:decimal;">
+  * Check DNS server configuration: Verify that the DNS server settings are[3D[K
+are correct and up-to-date.
+  * Update DNS server records: If necessary, update DNS server records to r[1D[K
+reflect changes in network infrastructure or services.
+</ol>
+
+3. <ol style="list-style-type:decimal;">
+  * Restart the DNS server: Attempt to restart the DNS server to resolve an[2D[K
+any temporary issues.
+  * Check for conflicts with other services: Verify that the DNS server is [K
+not conflicting with other network services or applications.
+</ol>
+
+<h2>Validation</h2>
+To validate the resolution of the error:
+
+* Check the DNS server logs for error messages
+* Verify that the affected service or data are now functioning correctly
+* Test connectivity to critical services and systems
+
+<h2>Troubleshooting</h2>
+If the error persists, follow these additional steps:
+
+* <figure><div>[Insert screenshot: Network diagram with DNS server highligh[8D[K
+highlighted]</div><figcaption>DNS Server Configuration</figcaption></figure[34D[K
+Configuration</figcaption></figure>
+* Check for conflicts with other services or applications
+* Verify that all network services and systems are functioning correctly
+
+<h2>Rollback / Recovery</h2>
+
+1. <ol style="list-style-type:decimal;">
+  * Document the error and resolution: Log the issue and update records as [K
+necessary.
+  * Restore DNS server settings to previous values: If changes were made, r[1D[K
+restore them to prevent further issues.
+</ol>
+
+<h2>References</h2>
+* [DNS Server Troubleshooting Guide]
+* [Network Infrastructure Manual]
+* [IT Support Handbook]
+</body>
+</html>

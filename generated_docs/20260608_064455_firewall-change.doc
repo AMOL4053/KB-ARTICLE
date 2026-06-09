@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>firewall change</title>
+  <style>
+    body { color:#202124;font-family:Arial,Helvetica,sans-serif;line-height:1.55;margin:32px;max-width:900px; }
+    h1, h2 { color:#1f2933; }
+    h1 { border-bottom:2px solid #d8dee4;padding-bottom:8px; }
+    li { margin:6px 0; }
+    table { border-collapse:collapse;width:100%;margin:14px 0; }
+    th, td { border:1px solid #999;padding:8px;text-align:left; }
+    th { background:#f1f5f9; }
+  </style>
+</head>
+<body>
+<h1>Firmware Change SOP</h1>
+<p>This Standard Operating Procedure (SOP) outlines the steps for updating [K
+the firmware on a firewall device.</p>
+
+<h2>Purpose</h2>
+<p>The purpose of this procedure is to ensure that the firewall device is u[1D[K
+updated with the latest firmware, thereby improving its security and functi[6D[K
+functionality.</p>
+
+<h2>Scope</h2>
+<ul>
+  <li>The scope of this procedure includes updating firmware on a single fi[2D[K
+firewall device.</li>
+  <li>The procedure does not include updating firmware on multiple devices [K
+or in bulk.</li>
+</ul>
+
+<h2>Prerequisites</h2>
+<ul>
+  <li>The firewall device must be connected to the network and powered on.<[4D[K
+on.</li>
+  <li>The user must have administrative access to the firewall device.</li>[12D[K
+device.</li>
+  <li>A valid firmware update package must be downloaded and st[2D[K
+stored in a secure location.</li>
+</ul>
+
+<h2>Roles and Responsibilities</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead><tr><th>Role</th><th>Responsibility</th></tr></thead>
+  <tbody><tr><td>User</td><td>Download and upload firmware update package, [K
+perform the update procedure.</td></tr></tbody>
+  <tr><td>Administrative Team Lead</td><td>Verify the necessity of the firm[4D[K
+firmware update, ensure that the necessary approvals are in place, and over[4D[K
+oversee the process.</td></tr>
+  <tr><td>Network Operations Manager</td><td>Monitor network traffic during[6D[K
+during the update procedure to prevent any disruptions.</td></tr>
+</table>
+
+<h2>Procedure</h2>
+<ol>
+  <li>Download a valid firmware update package from an authorized source an[2D[K
+and store it in a secure location.</li>
+  <li>Log into the firewall device as an administrative user and navigate t[1D[K
+to the settings or configuration page.</li>
+  <li>Locate the firmware update section and follow the on-screen instructi[9D[K
+instructions to upload the new firmware package.</li>
+  <li>Confirm that the update has been successfully installed and verify th[2D[K
+that the system is functioning correctly.</li>
+</ol>
+
+<h2>Required Screenshot / Image</h2>
+<div style="border:1px solid #999;padding:16px;background:#f5f5f5;">
+  <strong>Image Placeholder:</strong> The generated image will be inserted [K
+here after ServiceNow attachment upload.
+</div>
+
+<h2>Validation</h2>
+<ul>
+  <li>The firewall device must be functioning correctly after the update.</[9D[K
+update.</li>
+  <li>The system logs and audit trails must reflect a successful firmware u[1D[K
+update.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead><tr><th>Issue</th><th>Cause</th><th>Resolution</th></tr></thead>
+  <tbody><tr><td>Firmware update fails.</td><td>The firmware package may be[2D[K
+be corrupted or invalid, or the system may not have sufficient power to com[3D[K
+complete the update.</td><td>Verify the integrity of the firmware package a[1D[K
+and attempt the update again. Ensure that the system has sufficient power a[1D[K
+and connectivity.</td></tr>
+  <tr><td>Firmware update causes network disruption.</td><td>The update pro[3D[K
+process may be timing out or failing, causing a loss of connectivity to the[3D[K
+the network.</td><td>Restart the firewall device and re-attempt the firmwar[7D[K
+firmware update. If issues persist, contact the Network Operations Manager [K
+for assistance.</td></tr>
+</table>
+
+<h2>Rollback / Recovery</h2>
+<ol>
+  <li>If the firmware update fails or causes a problem, follow the troubles[8D[K
+troubleshooting steps outlined in this SOP to isolate and correct the issue[5D[K
+issue.</li>
+  <li>If necessary, restore the previous firmware version using the origina[7D[K
+original firmware package and follow the same update procedure to install t[1D[K
+the new version.</li>
+</ol>
+
+<h2>References</h2>
+<ul>
+  <li>The firewall device's user manual and technical documentation for tro[3D[K
+troubleshooting and maintenance procedures.</li>
+  <li>The manufacturer's official website for firmware updates, downloads, [K
+and support resources.</li>
+</ul>
+</body>
+</html>

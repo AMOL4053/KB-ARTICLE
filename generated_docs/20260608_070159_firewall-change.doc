@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>firewall change</title>
+  <style>
+    body { color:#202124;font-family:Arial,Helvetica,sans-serif;line-height:1.55;margin:32px;max-width:900px; }
+    h1, h2 { color:#1f2933; }
+    h1 { border-bottom:2px solid #d8dee4;padding-bottom:8px; }
+    li { margin:6px 0; }
+    table { border-collapse:collapse;width:100%;margin:14px 0; }
+    th, td { border:1px solid #999;padding:8px;text-align:left; }
+    th { background:#f1f5f9; }
+  </style>
+</head>
+<body>
+<h1>Firewall Change Standard Operating Procedure (SOP)</h1>
+<p>This SOP outlines the steps for updating the firewall configuration in ServiceNow.</p>
+
+<h2>Purpose</h2>
+<p>The purpose of this SOP is to ensure a secure and efficient update of the firewall configuration, minimizing downtime and potential security risks.</p>
+
+<h2>Scope</h2>
+<ul>
+  <li>Applicable to all IT staff with access to ServiceNow</li>
+  <li>Scope includes updating firewall rules and configurations</li>
+</ul>
+
+<h2>Prerequisites</h2>
+<ol>
+  <li>ServiceNow administrator account with necessary permissions</li>
+  <li>Familiarity with ServiceNow firewall configuration</li>
+</ol>
+
+<h2>Roles and Responsibilities</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead><tr><th>Role</th><th>Responsibility</th></tr></thead>
+  <tbody><tr><td>IT Administrator</td><td>Update firewall rules and configurations</td></tr><tr><td>ServiceNow User</td><td>Verify firewall changes have been applied successfully</td></tr></tbody>
+</table>
+
+<h2>Procedure</h2>
+<ol>
+  <li>Create a backup of the current firewall configuration using ServiceNow's built-in backup tool.</li>
+  <li>Login to ServiceNow as an administrator and navigate to the Firewall Configuration page.</li>
+  <li>Select the rules to be updated or added, and enter the new configuration values in the required fields.</li>
+  <li>Click the "Save" button to apply the changes.</li>
+</ol>
+
+<h2>Required Screenshot / Image</h2>
+<div style="border:1px solid #999;padding:16px;background:#f5f5f5;">
+  <strong>Image Placeholder:</strong> The generated image will be inserted here after ServiceNow attachment upload.
+</div>
+
+<h2>Validation</h2>
+<ul>
+  <li>Verify the updated firewall rules and configurations are correct by comparing them to the backup created earlier.</li>
+  <li>Test network connectivity to ensure all affected systems can access resources as expected.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead><tr><th>Issue</th><th>Cause</th><th>Resolution</th></tr></thead>
+  <tbody><tr><td>The firewall rules are not being applied.</td><td>Cause: Insufficient permissions or incorrect configuration values.</td><td>Resolution: Check and update permissions, or review and correct the configuration values.</td></tr><tr><td>No network connectivity is available.</td><td>Cause: Incorrect firewall rule settings.</td><td>Resolution: Review and adjust the affected firewall rules to ensure proper network connectivity.</td></tr></tbody>
+</table>
+
+<h2>Rollback / Recovery</h2>
+<ol>
+  <li>In case of an error or unexpected change, log out of ServiceNow immediately and restart the system to revert changes.</li>
+  <li>If a backup is created during the update process, restore from the backup to revert changes.</li>
+</ol>
+
+<h2>References</h2>
+<ul>
+  <li>ServiceNow Firewall Configuration Guide</li>
+  <li>IT Service Management Best Practices</li>
+</ul>
+</body>
+</html>

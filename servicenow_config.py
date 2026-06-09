@@ -1,0 +1,7 @@
+SERVICENOW_INSTANCE_URL = "https://dev271711.service-now.com"
+SERVICENOW_USERNAME = "admin"
+SERVICENOW_PASSWORD = "d-EC7EtbOo8="
+SERVICENOW_TABLE = "kb_knowledge"
+SERVICENOW_KB_TABLE = "kb_knowledge"
+SERVICENOW_KB_SYS_ID = "0aa3ffa7db7c030064dd36cb7c96197f"
+SERVICENOW_KB_NAME = "KCS Knowledge Base (demo data)"

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOP Draft Builder</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="workspace">
+      <aside class="control-panel">
+        <div class="brand">
+          <span class="mark">KB</span>
+          <div>
+            <h1>SOP Draft Builder</h1>
+            <p>Ollama to ServiceNow draft</p>
+          </div>
+        </div>
+
+        <form id="sopForm" class="composer">
+          <label for="topic">Problem or SOP request</label>
+          <textarea id="topic" name="topic" rows="6" placeholder="Example: Outlook configuration error SOP" required></textarea>
+
+          <label for="model">Ollama model</label>
+          <input id="model" name="model" type="text" value="llama3.2:latest">
+
+          <button id="generateBtn" type="submit">
+            <span class="btn-icon">+</span>
+            Generate SOP
+          </button>
+
+          <button id="saveDraftBtn" class="secondary-action hidden" type="button">
+            Save as Draft
+          </button>
+        </form>
+
+        <div id="summary" class="summary hidden">
+          <div>
+            <span>KB Number</span>
+            <strong id="kbNumber">Pending</strong>
+          </div>
+          <div>
+            <span>Status</span>
+            <strong id="kbStatus">Draft</strong>
+          </div>
+          <div>
+            <span>Layout</span>
+            <strong id="layout">-</strong>
+          </div>
+        </div>
+      </aside>
+
+      <section class="result-area">
+        <div class="topbar">
+          <div>
+            <span class="eyebrow">Generated document</span>
+            <h2 id="docTitle">Ready when you are</h2>
+          </div>
+          <div id="downloadActions" class="actions hidden">
+            <a id="downloadDocx" class="icon-button" href="#" download>DOCX</a>
+            <a id="downloadImage" class="icon-button" href="#" download>PNG</a>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <section class="preview-panel">
+            <iframe id="preview" title="Generated SOP preview"></iframe>
+            <div id="emptyPreview" class="empty-state">
+              <span class="pulse"></span>
+              <p>Your generated SOP HTML preview will appear here.</p>
+            </div>
+          </section>
+
+          <aside class="log-panel">
+            <div class="log-head">
+              <span>Activity</span>
+              <button id="clearLogs" type="button">Clear</button>
+            </div>
+            <ol id="logs" class="logs"></ol>
+          </aside>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
